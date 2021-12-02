@@ -10,6 +10,10 @@ const { blue, red, green } = require('kolorist')
 
 const cwd = process.cwd()
 
+const commonDependencies = [
+  '@types/node',
+]
+
 const eslintDependencies = [
   'eslint',
   'eslint-config-standard',
@@ -17,6 +21,7 @@ const eslintDependencies = [
   'eslint-plugin-node',
   'eslint-plugin-promise',
   'eslint-plugin-vue',
+  '@typescript-eslint/parser',
 ]
 
 async function checkViteDir (dir) {
@@ -69,9 +74,9 @@ async function copyEslintConfig (root) {
   await fs.copyFile(srcPath, filePath)
 }
 
-function addEslintDependencies (root, verbose) {
+function addDependencies (root, dependencies, verbose) {
   return new Promise((resolve, reject) => {
-    const child = spawn('npm', ['install', '--save-dev', ...eslintDependencies], {
+    const child = spawn('npm', ['install', '--save-dev', ...dependencies], {
       cwd: root,
       stdio: verbose ? 'inherit' : undefined,
     })
@@ -174,6 +179,8 @@ async function start () {
     type: '',
   })
 
+  const dependencies = [...commonDependencies]
+
   if (features.includes('alias')) {
     console.log(blue('➔') + ' Updating tsconfig.json')
     await updateTsConfig(root)
@@ -186,9 +193,11 @@ async function start () {
     console.log(blue('➔') + ' Copying .eslintrc.js')
     await copyEslintConfig(root)
 
-    console.log(blue('➔') + ' Adding ESLint dependencies')
-    await addEslintDependencies(root, verbose)
+    dependencies.push(...eslintDependencies)
   }
+
+  console.log(blue('➔') + ' Adding dependencies')
+  await addDependencies(root, dependencies, verbose)
 
   if (features.includes('tailwind')) {
     console.log(blue('➔') + ' Installing Tailwind CSS')
