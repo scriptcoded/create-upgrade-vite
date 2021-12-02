@@ -6,7 +6,7 @@ const fs = require('fs/promises')
 
 const argv = require('minimist')(process.argv.slice(2), { string: ['_'] })
 const prompts = require('prompts')
-const { blue, red } = require('kolorist')
+const { blue, red, green } = require('kolorist')
 
 const cwd = process.cwd()
 
@@ -201,7 +201,7 @@ async function start () {
   console.log(blue('➔') + ' Installing remaining dependencies')
   await installDependencies(root, verbose)
 
-  console.log(blue('✔') + ' Project upgraded')
+  console.log(green('✔') + ' Project upgraded')
 }
 
 start()
