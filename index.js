@@ -60,7 +60,7 @@ async function updateViteConfig (root) {
   content = content.replace('[vue()]', `[vue()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname, 'src'),
     },
   },`)
 
