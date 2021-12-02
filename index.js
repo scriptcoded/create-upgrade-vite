@@ -24,6 +24,12 @@ const eslintDependencies = [
   '@typescript-eslint/parser',
 ]
 
+const tailwindDependencies = [
+  'tailwindcss@latest',
+  'postcss@latest',
+  'autoprefixer@latest',
+]
+
 async function checkViteDir (dir) {
   const viteConfigPath = path.join(dir, 'vite.config.ts')
 
@@ -215,9 +221,6 @@ async function start () {
     dependencies.push(...eslintDependencies)
   }
 
-  console.log(blue('➔') + ' Adding dependencies')
-  await addDependencies(root, dependencies, verbose)
-
   if (features.includes('tailwind')) {
     console.log(blue('➔') + ' Installing Tailwind CSS')
     await installTailwind(root, verbose)
@@ -228,7 +231,12 @@ async function start () {
     console.log(blue('➔') + ' Adding Tailwind stylesheet')
     await copyTailwindStyle(root)
     await importTailwindStyle(root)
+
+    dependencies.push(...tailwindDependencies)
   }
+
+  console.log(blue('➔') + ' Adding dependencies')
+  await addDependencies(root, dependencies, verbose)
 
   console.log(blue('➔') + ' Installing remaining dependencies')
   await installDependencies(root, verbose)
