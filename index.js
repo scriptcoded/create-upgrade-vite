@@ -109,6 +109,25 @@ async function updateTailwindConfig (root) {
   await fs.writeFile(filePath, content)
 }
 
+async function copyTailwindStyle (root) {
+  const srcPath = path.join(__dirname, 'tailwind.template.css')
+  const filePath = path.join(root, 'src', 'index.css')
+
+  await fs.copyFile(srcPath, filePath)
+}
+
+async function importTailwindStyle (root) {
+  const filePath = path.join(root, 'src', 'main.ts')
+
+  let content = await fs.readFile(filePath, 'utf-8')
+
+  content = content.replace("import App from './App.vue'", `import App from './App.vue'
+
+import './index.css'`)
+
+  await fs.writeFile(filePath, content)
+}
+
 async function installDependencies (root, verbose) {
   return new Promise((resolve, reject) => {
     const child = spawn('npm', ['install'], {
@@ -205,6 +224,10 @@ async function start () {
 
     console.log(blue('➔') + ' Updating Tailwind config')
     await updateTailwindConfig(root)
+
+    console.log(blue('➔') + ' Adding Tailwind stylesheet')
+    await copyTailwindStyle(root)
+    await importTailwindStyle(root)
   }
 
   console.log(blue('➔') + ' Installing remaining dependencies')
